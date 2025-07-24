@@ -2,6 +2,7 @@
 set -e
 
 echo "Installing dependencies..."
+sudo systemctl --no-block restart netplan-wpa-wlan0.service ssh.service
 sudo apt update
 sudo apt install -y build-essential git meson ninja-build pkg-config python3-ply \
     libdrm-dev libudev-dev libjpeg-dev libtiff5-dev libpng-dev libboost-all-dev  \
@@ -39,5 +40,7 @@ cd rpicam-apps
 meson setup build --wipe
 ninja -C build
 sudo ninja -C build install
+
+sudo ldconfig
 
 echo "Installation complete! Please reboot your Raspberry Pi now to enable the camera."
