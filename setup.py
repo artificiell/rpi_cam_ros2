@@ -25,7 +25,8 @@ setup(
     entry_points={
         'console_scripts': [
             'camera = rpi_cam_ros2.camera:main',
-            'viewer = rpi_cam_ros2.viewer:main'
+            'viewer = rpi_cam_ros2.viewer:main',
+            'image2scan = rpi_cam_ros2.image2scan:main'
         ],
     },
 )
