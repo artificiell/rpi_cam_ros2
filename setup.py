@@ -23,7 +23,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'camera = rpi_cam_ros2.camera:main'
+            'camera = rpi_cam_ros2.camera:main',
+            'viewer = rpi_cam_ros2.viewer:main'
         ],
     },
 )

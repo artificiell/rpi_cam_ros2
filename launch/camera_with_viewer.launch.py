@@ -11,6 +11,7 @@ def generate_launch_description():
     frame_width = LaunchConfiguration('frame_width')
     frame_height = LaunchConfiguration('frame_height')
     frame_rate = LaunchConfiguration('frame_rate')
+    terminal_width = LaunchConfiguration('terminal_rate')
 
     # Launch arguments
     robot_ns_launch_arg = DeclareLaunchArgument(
@@ -29,11 +30,14 @@ def generate_launch_description():
         'frame_rate',
         default_value = '15'
     )
-
+    terminal_width_arg = DeclareLaunchArgument(
+        'terminal_width',
+        default_value = '80'
+    )
 
     # Camera node
     camera_node = Node(
-        package = 'ros2_brickpi3',
+        package = 'rpi_cam_ros2',
         namespace = robot_ns,
         executable = 'camera',
         name = 'rpi_camera_sensor',
@@ -45,10 +49,24 @@ def generate_launch_description():
         }]
     )
 
+    # Viewer node
+    viewer_node = Node(
+        package = 'rpi_cam_ros2',
+        namespace = robot_ns,
+        executable = 'viewer',
+        name = 'ascii_image_viewer',
+        parameters=[{
+            'width': LaunchConfiguration('terminal_width')
+        }],
+        output = "screen"
+    )
+
     return LaunchDescription([
         robot_ns_launch_arg,
         frame_width_arg,
         frame_height_arg,
         frame_rate_arg,
-        camera_node
+        terminal_width_arg,
+        camera_node,
+        viewer_node
     ])
