@@ -33,7 +33,7 @@ def generate_launch_description():
 
     # Camera node
     camera_node = Node(
-        package = 'ros2_brickpi3',
+        package = 'rpi_cam_ros2',
         namespace = robot_ns,
         executable = 'camera',
         name = 'rpi_camera_sensor',

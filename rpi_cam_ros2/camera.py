@@ -70,7 +70,7 @@ class RPiCamSensor(Node):
         ]
 
         # Start rpicam-vid process
-        self.get_logger().info("Starting camwera  process... ")
+        self.get_logger().info("Starting camera process... ")
         self.proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
         buffer = b''
 
