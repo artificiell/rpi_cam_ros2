@@ -11,6 +11,7 @@ def generate_launch_description():
     frame_width = LaunchConfiguration('frame_width')
     frame_height = LaunchConfiguration('frame_height')
     frame_rate = LaunchConfiguration('frame_rate')
+    flip_image = LaunchConfiguration('flip_image')
 
     # Launch arguments
     robot_ns_launch_arg = DeclareLaunchArgument(
@@ -29,7 +30,10 @@ def generate_launch_description():
         'frame_rate',
         default_value = '15'
     )
-
+    flip_image_arg = DeclareLaunchArgument(
+        'flip_image',
+        default_value = 'False'
+    )
 
     # Camera node
     camera_node = Node(
@@ -41,7 +45,8 @@ def generate_launch_description():
             'width': LaunchConfiguration('frame_width'),
             'height': LaunchConfiguration('frame_height'),
             'framerate': LaunchConfiguration('frame_rate'),
-            'codec': 'mjpeg'
+            'codec': 'mjpeg',
+            'flip': LaunchConfiguration('flip_image'),
         }]
     )
 
@@ -50,5 +55,6 @@ def generate_launch_description():
         frame_width_arg,
         frame_height_arg,
         frame_rate_arg,
+        flip_image_arg,
         camera_node
     ])
