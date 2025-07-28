@@ -3,10 +3,11 @@ set -e
 
 echo "Installing dependencies..."
 sudo apt update
-sudo apt install -y build-essential git meson ninja-build pkg-config \
-    libdrm-dev libudev-dev libjpeg-dev libtiff5-dev libpng-dev \
+sudo apt install -y build-essential git meson ninja-build pkg-config python3-ply \
+    libdrm-dev libudev-dev libjpeg-dev libtiff5-dev libpng-dev libboost-all-dev  \
     libavcodec-dev libavformat-dev libavdevice-dev libavfilter-dev libavutil-dev \
-    libegl1-mesa-dev libgles2-mesa-dev libv4l-dev v4l-utils libcamera-dev libcamera-tools
+    libegl1-mesa-dev libgles2-mesa-dev libv4l-dev v4l-utils libcamera-dev \
+    libexif-dev libcamera-tools 
 
 CONFIG_FILE="/boot/firmware/config.txt"
 OVERLAY="dtoverlay=imx219,cam0"
