@@ -2,13 +2,16 @@
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import qos_profile_default, qos_profile_sensor_data 
+from ament_index_python.packages import get_package_share_directory
 from sensor_msgs.msg import Image, CameraInfo
+from camera_info_manager import CameraInfoManager
 from cv_bridge import CvBridge
 import subprocess
 import threading
 import numpy as np
 import cv2
 import time
+import os
 
 # Class for ha<ndle RPi Camera Module (v2)
 class RPiCamSensor(Node):
@@ -20,12 +23,14 @@ class RPiCamSensor(Node):
         self.declare_parameter('height', 480)
         self.declare_parameter('framerate', 30)
         self.declare_parameter('codec', 'mjpeg')
+        self.declare_parameter('flip', True)
         self.declare_parameter('profile', 'best_effort') # QoS profile: best_effort or reliable
 
-        self.width = str(self.get_parameter('width').get_parameter_value().integer_value)
-        self.height = str(self.get_parameter('height').get_parameter_value().integer_value)
-        self.framerate = str(self.get_parameter('framerate').get_parameter_value().integer_value)
+        self.width = self.get_parameter('width').get_parameter_value().integer_value
+        self.height = self.get_parameter('height').get_parameter_value().integer_value
+        self.framerate = self.get_parameter('framerate').get_parameter_value().integer_value
         self.codec = self.get_parameter('codec').get_parameter_value().string_value
+        self.flip = self.get_parameter('flip').get_parameter_value().bool_value
 
         # Set up ROS publiser(s)
         if self.get_parameter('profile').get_parameter_value().string_value.lower() == 'reliable':
@@ -37,14 +42,21 @@ class RPiCamSensor(Node):
         self.info_pub = self.create_publisher(CameraInfo, 'camera/info', qos_profile)
         self.bridge = CvBridge()
 
-        # CameraInfo parameters (update with your calibration if available)
+        # Read CameraInfo parameters
         self.camera_info_msg = CameraInfo()
-        self.camera_info_msg.width = int(self.width)
-        self.camera_info_msg.height = int(self.height)
-        self.camera_info_msg.k = [1, 0, 0, 0, 1, 0, 0, 0, 1]  # Dummy
-        self.camera_info_msg.p = [1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0]  # Dummy
-        self.camera_info_msg.distortion_model = 'plumb_bob'
-        self.camera_info_msg.d = [0.0, 0.0, 0.0, 0.0, 0.0]
+        try:
+            url = os.path.join(get_package_share_directory('rpi_cam_ros2'), 'config', 'calibration.yaml')
+            camera_info_manager = CameraInfoManager(self, cname = 'rpi_camera', url = f'file://{url}')
+            camera_info_manager.loadCameraInfo()
+            self.camera_info_msg = camera_info_manager.getCameraInfo()
+        except Exception as e:
+            self.get_logger().warn(f"Could not load calibration, using default instead.")        
+            self.camera_info_msg.width = int(self.width)
+            self.camera_info_msg.height = int(self.height)
+            self.camera_info_msg.k = [1, 0, 0, 0, 1, 0, 0, 0, 1]  # Dummy
+            self.camera_info_msg.p = [1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0]  # Dummy
+            self.camera_info_msg.distortion_model = 'plumb_bob'
+            self.camera_info_msg.d = [0.0, 0.0, 0.0, 0.0, 0.0]
 
         # Start sepearte thread for reading camera frames
         self.frame = None
@@ -103,6 +115,8 @@ class RPiCamSensor(Node):
         # Sned latest fram as image
         if img is not None:
             try:
+                if self.flip:
+                    img = cv2.flip(cv2.flip(img, 0), 1)
                 now = self.get_clock().now().to_msg()
                 image_msg = self.bridge.cv2_to_imgmsg(img, encoding='bgr8')
                 image_msg.header.stamp = now
