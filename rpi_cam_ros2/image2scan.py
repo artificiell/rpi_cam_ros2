@@ -71,7 +71,7 @@ class RPiImageToLaserScan(Node):
             return
         
         # Convert to HSV for color thresholding
-        hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
+        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
         # Detect red in HSV (red wraps around 0/180)
         lower_th1 = np.array([0, 100, 100])

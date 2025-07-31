@@ -32,7 +32,7 @@ def generate_launch_description():
     )
     flip_image_arg = DeclareLaunchArgument(
         'flip_image',
-        default_value = 'False'
+        default_value = 'True'
     )
 
     # Camera node

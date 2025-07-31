@@ -42,7 +42,7 @@ class RPiCamSensor(Node):
         self.info_pub = self.create_publisher(CameraInfo, 'camera/info', qos_profile)
         self.bridge = CvBridge()
 
-        # Read CameraInfo parameters
+        # Read camera parameters
         self.camera_info_msg = CameraInfo()
         try:
             url = os.path.join(get_package_share_directory('rpi_cam_ros2'), 'config', 'calibration.yaml')
@@ -99,7 +99,6 @@ class RPiCamSensor(Node):
                     np_arr = np.frombuffer(buffer, dtype=np.uint8)
                     frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
                     if frame is not None:
-                        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                         with self.lock:
                             self.frame = frame
                 except Exception as e:
@@ -112,7 +111,7 @@ class RPiCamSensor(Node):
         with self.lock:
             img = self.frame.copy() if self.frame is not None else None
 
-        # Sned latest fram as image
+        # Send latest frame as image
         if img is not None:
             try:
                 if self.flip:
