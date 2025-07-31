@@ -14,7 +14,9 @@ class AsciiImageViewer(Node):
 
         # Declare and get parameters
         self.declare_parameter('width', 80)
+        self.declare_parameter('channel', 'all')
         self.width = self.get_parameter('width').get_parameter_value().integer_value
+        self.channel = self.get_parameter('channel').get_parameter_value().integer_value
 
         # Detect truecolor support
         colorterm = os.environ.get("COLORTERM", "")
@@ -38,7 +40,7 @@ class AsciiImageViewer(Node):
             if self.truecolor:
                 print(self.image_to_color_ascii(img, width = self.width))
             else:
-                print(self.image_to_grayscale_ascii(img, width = self.width))
+                print(self.image_to_grayscale_ascii(img, width = self.width, channel = self.channel))
         except Exception as e:
             self.get_logger().error(f"Error: {e}")
 
@@ -68,9 +70,16 @@ class AsciiImageViewer(Node):
         return "\n".join(output_lines)
 
     # Convert image to grayscael ASCII 
-    def image_to_grayscale_ascii(self, img, width):
+    def image_to_grayscale_ascii(self, img, width, channel):
         ascii_chars = np.array(list(" .:-=+*#%@"))
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        if channel == 'blue':
+            gray, _, _ = cv2.split(img)
+        elif channel == 'green':
+            _, gray, _ = cv2.split(img)
+        elif channel == 'red':
+            _, _, gray = cv2.split(img)
+        else:
+            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         h, w = gray.shape
         if w == 0 or h == 0:
             return "[empty image]"
