@@ -8,8 +8,7 @@ def generate_launch_description():
 
     # Launch configuration
     robot_ns = LaunchConfiguration('robot_ns')
-    frame_width = LaunchConfiguration('frame_width')
-    frame_height = LaunchConfiguration('frame_height')
+    resolution = LaunchConfiguration('resolution')
     frame_rate = LaunchConfiguration('frame_rate')
     flip_image = LaunchConfiguration('flip_image')
     camera_height = LaunchConfiguration('camera_height')
@@ -19,13 +18,9 @@ def generate_launch_description():
         'robot_ns',
         default_value = 'rp0'
     )
-    frame_width_arg = DeclareLaunchArgument(
-        'frame_width',
-        default_value = '320'
-    )
-    frame_height_arg = DeclareLaunchArgument(
-        'frame_height',
-        default_value = '240'
+    resolution_arg = DeclareLaunchArgument(
+        'resolution',
+        default_value = '180p'
     )
     frame_rate_arg = DeclareLaunchArgument(
         'frame_rate',
@@ -47,8 +42,7 @@ def generate_launch_description():
         executable = 'camera',
         name = 'rpi_camera_sensor',
         parameters=[{
-            'width': LaunchConfiguration('frame_width'),
-            'height': LaunchConfiguration('frame_height'),
+            'resolution': LaunchConfiguration('resolution'),
             'framerate': LaunchConfiguration('frame_rate'),
             'codec': 'mjpeg',
             'flip': LaunchConfiguration('flip_image'),
@@ -68,8 +62,7 @@ def generate_launch_description():
     
     return LaunchDescription([
         robot_ns_launch_arg,
-        frame_width_arg,
-        frame_height_arg,
+        resolution_arg,
         frame_rate_arg,
         flip_image_arg,
         camera_height_arg,

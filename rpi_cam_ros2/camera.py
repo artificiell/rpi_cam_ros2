@@ -19,19 +19,30 @@ class RPiCamSensor(Node):
         super().__init__('rpi_camera_sensor')
 
         # Declare and get parameters
-        self.declare_parameter('width', 640)
-        self.declare_parameter('height', 480)
+        self.declare_parameter('resolution', 'VGA') # QVGA, VGA (default), 180p, or 320p
         self.declare_parameter('framerate', 30)
         self.declare_parameter('codec', 'mjpeg')
         self.declare_parameter('flip', True)
         self.declare_parameter('profile', 'best_effort') # QoS profile: best_effort or reliable
-
-        self.width = self.get_parameter('width').get_parameter_value().integer_value
-        self.height = self.get_parameter('height').get_parameter_value().integer_value
         self.framerate = self.get_parameter('framerate').get_parameter_value().integer_value
         self.codec = self.get_parameter('codec').get_parameter_value().string_value
         self.flip = self.get_parameter('flip').get_parameter_value().bool_value
-
+        
+        # Set parameters besed on camera resolution
+        if self.get_parameter('resolution').get_parameter_value().string_value.lower() == 'qvga':
+            self.frame_width, self.frame_height = 320, 240
+            calibratrion_file = 'calibration_qvga.yaml'
+        elif self.get_parameter('resolution').get_parameter_value().string_value.lower() == '180p':
+            self.frame_width, self.frame_height = 320, 180
+            calibratrion_file = 'calibration_180p.yaml'
+        elif self.get_parameter('resolution').get_parameter_value().string_value.lower() == '360p':
+            self.frame_width, self.frame_height = 640, 360
+            calibratrion_file = 'calibration_360p.yaml'
+        else:
+            self.frame_width, self.frame_height = 640, 480
+            calibratrion_file = 'calibration_vga.yaml'
+        self.get_logger().warn(f"Initalizing camera with resolution {self.frame_width} x {self.frame_height} @ {self.framerate} frames / second")
+            
         # Set up ROS publiser(s)
         if self.get_parameter('profile').get_parameter_value().string_value.lower() == 'reliable':
             qos_profile = qos_profile_default
@@ -45,7 +56,7 @@ class RPiCamSensor(Node):
         # Read camera parameters
         self.camera_info_msg = CameraInfo()
         try:
-            url = os.path.join(get_package_share_directory('rpi_cam_ros2'), 'config', 'calibration.yaml')
+            url = os.path.join(get_package_share_directory('rpi_cam_ros2'), 'config', calibratrion_file)
             camera_info_manager = CameraInfoManager(self, cname = 'rpi_camera', url = f'file://{url}')
             camera_info_manager.loadCameraInfo()
             self.camera_info_msg = camera_info_manager.getCameraInfo()
@@ -65,7 +76,7 @@ class RPiCamSensor(Node):
         self.thread = threading.Thread(target = self.capture_process)
         self.thread.start()        
 
-        # Timer based on framerate
+        # Timer based on frame rate
         timer_period = 1.0 / float(self.framerate)
         self.timer = self.create_timer(timer_period, self.timer_callback)
 
@@ -73,8 +84,8 @@ class RPiCamSensor(Node):
     def capture_process(self):
         cmd = [
             'rpicam-vid',
-            '--width', str(self.width),
-            '--height', str(self.height),
+            '--width', str(self.frame_width),
+            '--height', str(self.frame_height),
             '--framerate', str(self.framerate),
             '--codec', self.codec,
             '--timeout', '0',   # Run indefinitely
