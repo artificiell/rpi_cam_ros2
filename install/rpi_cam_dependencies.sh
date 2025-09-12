@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "Installing dependencies..."
+echo "Installing RPi cam dependencies..."
 sudo systemctl --no-block restart netplan-wpa-wlan0.service ssh.service
 sudo apt update
 sudo apt install -y build-essential git meson ninja-build pkg-config python3-ply \
