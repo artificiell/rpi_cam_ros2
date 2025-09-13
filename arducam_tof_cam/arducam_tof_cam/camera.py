@@ -13,10 +13,12 @@ class ArducamNode(Node):
 
         # Get ROS param
         self.declare_parameter('mode', 'depth')  # Can be "raw" or "depth"
+        self.declare_parameter('framerate', 15)
         mode = self.get_parameter('mode').get_parameter_value().string_value.lower()
         self.frame_type = ac.FrameType.RAW if mode == 'raw' else ac.FrameType.DEPTH
         self.get_logger().info(f"Selected ArduCam ToF camera mode: {mode.upper()}")
-
+        self.framerate = self.get_parameter('framerate').get_parameter_value().integer_value
+        
         # Inatailze the ArduCam camera
         self.cam = ac.ArducamCamera()
         self.initialized = False
@@ -24,8 +26,8 @@ class ArducamNode(Node):
 
         # Setup ROS publisher
         self.bridge = CvBridge()
-        self.publisher = self.create_publisher(Image, 'image', 10)
-        self.timer = self.create_timer(1.0 / 30.0, self.capture)
+        self.publisher = self.create_publisher(Image, 'arducam/image', 10)
+        self.timer = self.create_timer(1.0 / float(self.framerate), self.capture)
 
     # Open and initialize the ArduCam camera
     def init(self) -> bool:
@@ -44,7 +46,7 @@ class ArducamNode(Node):
                     self.range = self.cam.getControl(ac.Control.RANGE)
                 self.get_logger().info("ArduCam initialized successfully.")
                 info = self.cam.getCameraInfo()
-                self.get_logger().info(f"Camera resolution: {info.width}x{info.height}")
+                self.get_logger().info(f"Camera resolution: {info.width}x{info.height} @ {self.framerate} frames / second")
                 self.get_logger().info(f"Camera type: {info.device_type}")
                 if self.frame_type == ac.FrameType.DEPTH:
                     self.get_logger().info(f"Camera depth range: {self.range / 1000.0} m")
@@ -73,7 +75,8 @@ class ArducamNode(Node):
 
                         msg = self.bridge.cv2_to_imgmsg(colored, encoding='bgr8')
                         self.publisher.publish(msg)
-                        
+                except:
+                    self.get_logger().warn(f"Something went wrong... ")
                 finally:
                     self.cam.releaseFrame(frame)
 
