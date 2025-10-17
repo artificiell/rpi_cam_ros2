@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = 'arducam_tof_ros2'
+package_name = 'arducam_tof_cam'
 
 setup(
     name=package_name,
@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'arducam = arducam_tof_ros2.arducam:main'
+            'arducam = arducam_tof_cam.camera:main'
         ],
     },
 )

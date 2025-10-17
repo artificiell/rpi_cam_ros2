@@ -6,16 +6,16 @@ import numpy as np
 import ArducamDepthCamera as ac
 import cv2
 
-
+# Class for handle ArduCam Time-of-Flight (ToF) Camera
 class ArducamNode(Node):
     def __init__(self):
-        super().__init__('arducam_tof_node')
+        super().__init__('arducam_tof_camera_node')
 
         # Get ROS param
-        self.declare_parameter('camera_mode', 'depth')  # Can be "raw" or "depth"
-        mode_str = self.get_parameter('camera_mode').get_parameter_value().string_value.lower()
-        self.frame_type = ac.FrameType.RAW if mode_str == 'raw' else ac.FrameType.DEPTH
-        self.get_logger().info(f"Selected ArduCam mode: {mode_str.upper()}")
+        self.declare_parameter('mode', 'depth')  # Can be "raw" or "depth"
+        mode = self.get_parameter('mode').get_parameter_value().string_value.lower()
+        self.frame_type = ac.FrameType.RAW if mode == 'raw' else ac.FrameType.DEPTH
+        self.get_logger().info(f"Selected ArduCam ToF camera mode: {mode.upper()}")
 
         # Inatailze the ArduCam camera
         self.cam = ac.ArducamCamera()
@@ -24,7 +24,7 @@ class ArducamNode(Node):
 
         # Setup ROS publisher
         self.bridge = CvBridge()
-        self.publisher = self.create_publisher(Image, 'arducam/image', 10)
+        self.publisher = self.create_publisher(Image, 'image', 10)
         self.timer = self.create_timer(1.0 / 30.0, self.capture)
 
     # Open and initialize the ArduCam camera

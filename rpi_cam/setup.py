@@ -2,7 +2,7 @@ import os
 from glob import glob
 from setuptools import find_packages, setup
 
-package_name = 'rpi_cam_ros2'
+package_name = 'rpi_cam'
 
 setup(
     name=package_name,
@@ -19,14 +19,14 @@ setup(
     zip_safe=True,
     maintainer='Andreas Persson',
     maintainer_email='andreas.persson@oru.se',
-    description='Raspberr Pi Camera - ROS 2 wrapper<',
+    description='Raspberry Pi Camera - ROS 2 wrapper<',
     license='MIT',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'camera = rpi_cam_ros2.camera:main',
-            'viewer = rpi_cam_ros2.viewer:main',
-            'image2scan = rpi_cam_ros2.image2scan:main'
+            'camera = rpi_cam.camera:main',
+            'viewer = rpi_cam.viewer:main',
+            'image2scan = rpi_cam.image2scan:main'
         ],
     },
 )

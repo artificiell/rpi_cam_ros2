@@ -16,7 +16,7 @@ def generate_launch_description():
     # Launch arguments
     robot_ns_launch_arg = DeclareLaunchArgument(
         'robot_ns',
-        default_value = 'rp0'
+        default_value = 'rpi'
     )
     resolution_arg = DeclareLaunchArgument(
         'resolution',
@@ -37,10 +37,10 @@ def generate_launch_description():
     
     # Camera node
     camera_node = Node(
-        package = 'rpi_cam_ros2',
+        package = 'rpi_cam',
         namespace = robot_ns,
         executable = 'camera',
-        name = 'rpi_camera_sensor',
+        name = 'rpi_camera_node',
         parameters=[{
             'resolution': LaunchConfiguration('resolution'),
             'framerate': LaunchConfiguration('frame_rate'),
@@ -51,10 +51,10 @@ def generate_launch_description():
 
     # Image to laser scan node
     image2scan_node = Node(
-        package = 'rpi_cam_ros2',
+        package = 'rpi_cam',
         namespace = robot_ns,
         executable = 'image2scan',
-        name = 'rpi_image_to_laserscan',
+        name = 'rpi_image_to_laserscan_node',
         parameters=[{
             'height': LaunchConfiguration('camera_height'),
         }]

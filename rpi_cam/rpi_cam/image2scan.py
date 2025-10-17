@@ -12,7 +12,7 @@ import cv2
 
 class RPiImageToLaserScan(Node):
     def __init__(self):
-        super().__init__('rpi_image_to_laserscan')
+        super().__init__('rpi_image_to_laserscan_node')
 
         # Declare and get parameters
         self.declare_parameter('height', 0.08) # meters above the floor

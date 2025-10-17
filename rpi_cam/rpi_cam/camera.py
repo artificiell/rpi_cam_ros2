@@ -13,10 +13,10 @@ import cv2
 import time
 import os
 
-# Class for ha<ndle RPi Camera Module (v2)
-class RPiCamSensor(Node):
+# Class for handle RPi Camera Module (v2)
+class RPiCameraNode(Node):
     def __init__(self):
-        super().__init__('rpi_camera_sensor')
+        super().__init__('rpi_camera_node')
 
         # Declare and get parameters
         self.declare_parameter('resolution', 'VGA') # QVGA, VGA (default), 180p, or 320p
@@ -56,7 +56,7 @@ class RPiCamSensor(Node):
         # Read camera parameters
         self.camera_info_msg = CameraInfo()
         try:
-            url = os.path.join(get_package_share_directory('rpi_cam_ros2'), 'config', calibratrion_file)
+            url = os.path.join(get_package_share_directory('rpi_cam'), 'config', calibratrion_file)
             camera_info_manager = CameraInfoManager(self, cname = 'rpi_camera', url = f'file://{url}')
             camera_info_manager.loadCameraInfo()
             self.camera_info_msg = camera_info_manager.getCameraInfo()
@@ -154,7 +154,7 @@ class RPiCamSensor(Node):
  # Main function       
 def main(args = None):
     rclpy.init(args = args)
-    node = RPiCamSensor()
+    node = RPiCameraNode()
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
