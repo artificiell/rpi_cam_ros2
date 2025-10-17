@@ -7,7 +7,7 @@ sudo apt update
 sudo apt install -y build-essential git meson ninja-build pkg-config python3-ply \
     libdrm-dev libudev-dev libjpeg-dev libtiff5-dev libpng-dev libboost-all-dev  \
     libavcodec-dev libavformat-dev libavdevice-dev libavfilter-dev libavutil-dev \
-    libegl1-mesa-dev libgles2-mesa-dev libv4l-dev v4l-utils libcamera-dev \
+    libegl1-mesa-dev libgles2-mesa-dev libv4l-dev v4l-utils libcamera-dev ffmpeg \
     libexif-dev libcamera-tools ros-jazzy-cv-bridge ros-jazzy-camera-info-manager-py \
     ros-jazzy-image-geometry
 

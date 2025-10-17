@@ -50,6 +50,39 @@ ROS 2 package for capturing and processing video streams from the Raspberry Pi C
 
 ---
 
+If encounter error:
+
+   ```bash
+   In file included from ../encoder/libav_encoder.cpp:20:
+   ../encoder/libav_encoder.hpp:33:2: error: #error "Error: libavcodec API version is too old for the libav encoder!"
+      33 | #error "Error: libavcodec API version is too old for the libav encoder!"
+         |  ^~~~~
+   ```
+
+Go to the installation folder and edite file `libav_encoder.hpp`: 
+
+   ```bash
+   cd ~/Downloads/rpicam-apps
+   emacs encoder/libav_encoder.hpp
+   ```
+Change the lines:
+ 
+   ```bash
+   #if LIBAVCODEC_VERSION_MAJOR < 61
+   #error "Error: libavcodec API version is too old for the libav encoder!"
+   #endif
+   }
+   ```
+
+ ...to reduce the `LIBAVCODEC_VERSION_MAJOR` dependecy, e.g.,: 
+
+   ```bash
+   #if LIBAVCODEC_VERSION_MAJOR < 60
+   #error "Error: libavcodec API version is too old for the libav encoder!"
+   #endif
+   }
+   ```
+
 ## Nodes
 
 ### 📷 RPi Camera Sensor (`camera.py`)
