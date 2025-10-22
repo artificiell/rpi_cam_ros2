@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'arducam = arducam_tof_cam.camera:main'
+            'camera = arducam_tof_cam.camera:main'
         ],
     },
 )
